@@ -1,0 +1,13 @@
+### List the items
+GET http://localhost:8080/items
+
+### Create a new item
+POST http://localhost:8080/items
+Content-Type: application/json
+
+{
+    "name": "Pasta"
+}
+
+### Delete an item
+DELETE http://localhost:8080/items/00707d0f-2f85-48ea-a3f3-ea0e7f06e6e8
