@@ -7,6 +7,24 @@ body {
     margin: 50px;
 }
 
+.hidden {
+    display: none !important;
+}
+
+#search-filter-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+#search-input {
+    padding: 0.5rem;
+    width: 300px;
+    font-size: 1.5rem;
+}
+
 #country-container {
     display: flex;
     flex-direction: row;

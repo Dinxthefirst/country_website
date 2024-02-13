@@ -1,3 +1,15 @@
+const searchFilterContainer = document.createElement("div");
+document.body.appendChild(searchFilterContainer);
+searchFilterContainer.id = "search-filter-container";
+
+const searchInput = document.createElement("input");
+searchFilterContainer.appendChild(searchInput);
+searchInput.id = "search-input";
+
+const filterContainer = document.createElement("div");
+searchFilterContainer.appendChild(filterContainer);
+filterContainer.id = "filter-container";
+
 const countryContainer = document.createElement("div");
 document.body.appendChild(countryContainer);
 countryContainer.id = "country-container";
@@ -12,6 +24,9 @@ async function main() {
   countryJson.forEach((country) => {
     addCountryToContainer(country);
   });
+
+  createSearchInput();
+  createFilterButtons();
 }
 
 async function getCountriesJson() {
@@ -29,7 +44,6 @@ async function getCountriesFromAPI() {
   }).then((response) => response.json());
 }
 
-
 function addCountryToContainer(country) {
   const countryDiv = document.createElement("div");
   countryDiv.className = "country";
@@ -44,7 +58,7 @@ function addCountryToContainer(country) {
   flag.alt = country.flags.alt;
   flag.className = "country-flag";
   flagContainer.appendChild(flag);
-  
+
   // Add country name
   const countryName = document.createElement("div");
   countryName.className = "country-name";
@@ -83,3 +97,67 @@ function addCountryToContainer(country) {
   countryDiv.appendChild(openStreetMapLink);
 }
 
+function createSearchInput() {
+  searchInput.type = "text";
+  searchInput.placeholder = "Search";
+  searchInput.addEventListener("input", searchForCountry);
+}
+
+function searchForCountry() {
+  const searchValue = searchInput.value.toLowerCase();
+  const countries = document.querySelectorAll(".country");
+  countries.forEach((country) => {
+    const countryName = country
+      .querySelector(".country-name")
+      .innerText.toLowerCase();
+    if (countryName.includes(searchValue)) {
+      country.classList.remove("hidden");
+    } else {
+      country.classList.add("hidden");
+    }
+  });
+}
+
+function createFilterButtons() {
+  const regions = [
+    "Africa",
+    "North America",
+    "South America",
+    "Asia",
+    "Europe",
+    "Oceania",
+    "Antarctica",
+  ];
+
+  regions.forEach((region) => {
+    const filterButton = document.createElement("button");
+    filterButton.innerText = region;
+    filterButton.className = "filter-button";
+    filterButton.addEventListener("click", filterCountries);
+    filterContainer.appendChild(filterButton);
+  });
+
+  const allButton = document.createElement("button");
+  allButton.innerText = "All";
+  allButton.className = "filter-button";
+  allButton.addEventListener("click", filterCountries);
+  filterContainer.appendChild(allButton);
+}
+
+function filterCountries(event) {
+  const region = event.target.innerText;
+  const countries = document.querySelectorAll(".country");
+  countries.forEach((country) => {
+    if (region === "All") {
+      country.classList.remove("hidden");
+      return;
+    }
+    
+    const continent = country.querySelector(".continent").innerText;
+    if (continent.includes(region)) {
+      country.classList.remove("hidden");
+    } else {
+      country.classList.add("hidden");
+    }
+  });
+}
