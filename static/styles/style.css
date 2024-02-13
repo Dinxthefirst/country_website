@@ -3,5 +3,51 @@
 }
 
 body {
-    font-family:'Times New Roman', Times, serif;
+    /* font-family:'Times New Roman', Times, serif;  */
+    margin: 50px;
+}
+
+#country-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    gap: 2rem;
+}
+
+.country {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    padding: 0.5rem;
+    width: 300px;
+    gap: 0.5rem;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+    background-color: #F6F6F6;
+}
+
+.country-flag-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 300px;
+    height: 200px;
+}
+
+.country-flag {
+    border-radius: 0.75rem;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.country-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    padding: 0.5rem 0;
 }

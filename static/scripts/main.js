@@ -1,4 +1,6 @@
 const countryContainer = document.createElement("div");
+document.body.appendChild(countryContainer);
+countryContainer.id = "country-container";
 main();
 
 async function main() {
@@ -7,11 +9,9 @@ async function main() {
 
   countryJson.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-  
-  countryContainer.id = "country-container";
-
-  // displayCountryNames(countryNames);
-  displayCountryFlags(countryJson);
+  countryJson.forEach((country) => {
+    addCountryToContainer(country);
+  });
 }
 
 async function getCountriesJson() {
@@ -29,23 +29,57 @@ async function getCountriesFromAPI() {
   }).then((response) => response.json());
 }
 
-function displayCountryNames(countryNames) {
-  const countriesList = document.createElement("ul");
-  document.body.appendChild(countriesList);
-  countryNames.forEach((country) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = country;
-    countriesList.appendChild(listItem);
-  });
+
+function addCountryToContainer(country) {
+  const countryDiv = document.createElement("div");
+  countryDiv.className = "country";
+  countryContainer.appendChild(countryDiv);
+
+  // Add flag
+  const flagContainer = document.createElement("div");
+  flagContainer.className = "country-flag-container";
+  countryDiv.appendChild(flagContainer);
+  const flag = document.createElement("img");
+  flag.src = country.flags.png;
+  flag.alt = country.flags.alt;
+  flag.className = "country-flag";
+  flagContainer.appendChild(flag);
+  
+  // Add country name
+  const countryName = document.createElement("div");
+  countryName.className = "country-name";
+  countryName.innerText = country.name.common;
+  countryDiv.appendChild(countryName);
+
+  // Add capital
+  const capital = document.createElement("div");
+  capital.className = "capital";
+  if (country.capital != undefined) {
+    if (country.capital.length > 1) {
+      capital.innerText = "Capitals: " + country.capital.join(", ");
+    } else {
+      capital.innerText = "Capital: " + country.capital;
+    }
+  } else {
+    capital.innerText = "No capital";
+  }
+  countryDiv.appendChild(capital);
+
+  // Add content
+  const continent = document.createElement("div");
+  continent.className = "continent";
+  if (country.continents.length > 1) {
+    continent.innerText = "Continents: " + country.continents.join(", ");
+  } else {
+    continent.innerText = "Continent: " + country.continents;
+  }
+  countryDiv.appendChild(continent);
+
+  // Add location
+  const openStreetMapLink = document.createElement("a");
+  openStreetMapLink.className = "open-street-map-link";
+  openStreetMapLink.href = country.maps.openStreetMaps;
+  openStreetMapLink.innerText = "Location";
+  countryDiv.appendChild(openStreetMapLink);
 }
 
-function displayCountryFlags(countryJson) {
-  document.body.appendChild(countryContainer);
-  countryJson.forEach((country) => {
-    const listItem = document.createElement("li");
-    const flag = document.createElement("img");
-    flag.src = country.flags.svg;
-    listItem.appendChild(flag);
-    countryContainer.appendChild(listItem);
-  });
-}
