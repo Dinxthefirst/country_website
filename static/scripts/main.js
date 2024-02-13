@@ -119,7 +119,40 @@ function searchForCountry() {
 }
 
 function createFilterButtons() {
-  const regions = [
+  createContinentFilter();
+}
+
+function toggleDropdown(event) {
+  const dropdown = event.target.closest(".dropdown");
+  const dropdownContainer = dropdown.querySelector(".dropdown-container");
+
+  dropdownContainer.classList.toggle("hidden");
+
+  for (let i = 0; i < dropdownContainer.children.length; i++) {
+    const child = dropdownContainer.children[i];
+    child.classList.toggle("hidden");
+  }
+}
+
+
+function createContinentFilter() {
+  const continentFilterContainer = document.createElement("div");
+  continentFilterContainer.className = "dropdown";
+  filterContainer.appendChild(continentFilterContainer);
+
+  const continentFilterButton = document.createElement("button");
+  continentFilterButton.className = "dropdown-button";
+  continentFilterButton.innerText = "Continent";
+  continentFilterButton.addEventListener("click", toggleDropdown);
+  continentFilterContainer.appendChild(continentFilterButton);
+
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.className = "dropdown-container";
+  dropdownContainer.classList.add("hidden");
+  continentFilterContainer.appendChild(dropdownContainer);
+
+  const continents = [
+    "All",
     "Africa",
     "North America",
     "South America",
@@ -129,22 +162,17 @@ function createFilterButtons() {
     "Antarctica",
   ];
 
-  regions.forEach((region) => {
-    const filterButton = document.createElement("button");
-    filterButton.innerText = region;
-    filterButton.className = "filter-button";
-    filterButton.addEventListener("click", filterCountries);
-    filterContainer.appendChild(filterButton);
+  continents.forEach((continent) => {
+    const continentButton = document.createElement("div");
+    continentButton.className = "dropdown-content";
+    continentButton.classList.add("hidden");
+    continentButton.innerText = continent;
+    continentButton.addEventListener("click", filterContinent);
+    dropdownContainer.appendChild(continentButton);
   });
-
-  const allButton = document.createElement("button");
-  allButton.innerText = "All";
-  allButton.className = "filter-button";
-  allButton.addEventListener("click", filterCountries);
-  filterContainer.appendChild(allButton);
 }
 
-function filterCountries(event) {
+function filterContinent(event) {
   const region = event.target.innerText;
   const countries = document.querySelectorAll(".country");
   countries.forEach((country) => {
@@ -152,7 +180,7 @@ function filterCountries(event) {
       country.classList.remove("hidden");
       return;
     }
-    
+
     const continent = country.querySelector(".continent").innerText;
     if (continent.includes(region)) {
       country.classList.remove("hidden");
