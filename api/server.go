@@ -17,9 +17,9 @@ func NewServer() *Server {
 
 	s.routes()
 
-	// Serve static files
 	s.PathPrefix("/static/styles/").Handler(http.StripPrefix("/static/styles/", http.FileServer(http.Dir("./static/styles/"))))
 	s.PathPrefix("/static/scripts/").Handler(http.StripPrefix("/static/scripts/", http.FileServer(http.Dir("./static/scripts/"))))
+	s.PathPrefix("/countries/").Handler(http.StripPrefix("/countries/", http.FileServer(http.Dir("./countries/"))))
 
 	return s
 }
