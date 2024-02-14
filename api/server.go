@@ -29,6 +29,7 @@ type Country struct {
 	Flag      Flag     `json:"flags"`
 	Capital   []string `json:"capital"`
 	Location  Map      `json:"maps"`
+	UNStatus  bool     `json:"unMember"`
 }
 
 type Server struct {

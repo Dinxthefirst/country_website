@@ -1,26 +1,32 @@
-const searchFilterContainer = document.createElement("div");
-document.body.appendChild(searchFilterContainer);
-searchFilterContainer.id = "search-filter-container";
+import { Country } from "./country.js";
+const countryList = [];
+const countryMap = new Map();
 
-const searchInput = document.createElement("input");
-searchFilterContainer.appendChild(searchInput);
-searchInput.id = "search-input";
+const searchInput = document.getElementById("search-input");
+const filterContainer = document.getElementById("filter-container");
+const countryContainer = document.getElementById("country-container");
 
-const filterContainer = document.createElement("div");
-searchFilterContainer.appendChild(filterContainer);
-filterContainer.id = "filter-container";
-
-const countryContainer = document.createElement("div");
-document.body.appendChild(countryContainer);
-countryContainer.id = "country-container";
 main();
 
 async function main() {
   const countryJson = await getCountries();
 
-  countryJson.sort((a, b) => a.name.common.localeCompare(b.name.common));
-
   countryJson.forEach((country) => {
+    countryList.push(
+      new Country(
+        country.name.common,
+        country.capital,
+        country.continents,
+        country.flags,
+        country.unMember,
+        country.maps.openStreetMaps
+      )
+    );
+  });
+
+  countryList.sort();
+
+  countryList.forEach((country) => {
     addCountryToContainer(country);
   });
 
@@ -53,6 +59,7 @@ function addCountryToContainer(country) {
   const countryDiv = document.createElement("div");
   countryDiv.className = "country";
   countryContainer.appendChild(countryDiv);
+  countryMap.set(country.name, countryDiv);
 
   // Add flag
   const flagContainer = document.createElement("div");
@@ -67,7 +74,7 @@ function addCountryToContainer(country) {
   // Add country name
   const countryName = document.createElement("div");
   countryName.className = "country-name";
-  countryName.innerText = country.name.common;
+  countryName.innerText = country.name;
   countryDiv.appendChild(countryName);
 
   // Add capital
@@ -125,6 +132,7 @@ function searchForCountry() {
 
 function createFilterButtons() {
   createContinentFilter();
+  createUNFilter();
 }
 
 function toggleDropdown(event) {
@@ -178,18 +186,81 @@ function createContinentFilter() {
 
 function filterContinent(event) {
   const region = event.target.innerText;
-  const countries = document.querySelectorAll(".country");
-  countries.forEach((country) => {
-    if (region === "All") {
-      country.classList.remove("hidden");
-      return;
-    }
+  if (region === "All") {
+    makeAllVisible();
+    return;
+  }
 
-    const continent = country.querySelector(".continent").innerText;
-    if (continent.includes(region)) {
-      country.classList.remove("hidden");
-    } else {
-      country.classList.add("hidden");
+  countryList.forEach((country) => {
+    let isRegion = false;
+    country.continents.forEach((continent) => {
+      if (continent === region) {
+        makeVisible(country.name);
+        isRegion = true;
+        return;
+      }
+    });
+    if (!isRegion) {
+      makeHidden(country.name);
     }
+  });
+}
+
+function createUNFilter() {
+  const unFilterContainer = document.createElement("div");
+  unFilterContainer.className = "dropdown";
+  filterContainer.appendChild(unFilterContainer);
+
+  const unFilterButton = document.createElement("button");
+  unFilterButton.className = "dropdown-button";
+  unFilterButton.innerText = "UN";
+  unFilterButton.addEventListener("click", toggleDropdown);
+  unFilterContainer.appendChild(unFilterButton);
+
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.className = "dropdown-container";
+  dropdownContainer.classList.add("hidden");
+  unFilterContainer.appendChild(dropdownContainer);
+
+  const unStatus = ["All", "UN Member", "Non-UN Member"];
+  unStatus.forEach((status) => {
+    const statusButton = document.createElement("div");
+    statusButton.className = "dropdown-content";
+    statusButton.classList.add("hidden");
+    statusButton.innerText = status;
+    statusButton.addEventListener("click", filterUNStatus);
+    dropdownContainer.appendChild(statusButton);
+  });
+}
+
+function filterUNStatus(event) {
+  const status = event.target.innerText;
+  if (status === "All") {
+    makeAllVisible();
+    return;
+  }
+
+  countryList.forEach((country) => {
+    if (status === "UN Member" && !country.unStatus) {
+      makeHidden(country.name);
+    } else if (status === "Non-UN Member" && country.unStatus) {
+      makeHidden(country.name);
+    } else {
+      makeVisible(country.name);
+    }
+  });
+}
+
+function makeHidden(countyName) {
+  countryMap.get(countyName).classList.add("hidden");
+}
+
+function makeVisible(countryName) {
+  countryMap.get(countryName).classList.remove("hidden");
+}
+
+function makeAllVisible() {
+  countryList.forEach((country) => {
+    makeVisible(country.name);
   });
 }

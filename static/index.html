@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="static/styles/style.css" />
   </head>
   <body>
-    <script src="static/scripts/main.js"></script>
+    <div id="search-filter-container">
+      <div id="search-container">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search for a country..."
+        />
+      </div>
+      <div id="filter-container"></div>
+    </div>
+    <div id="country-container"></div>
+    <script type="module" src="static/scripts/country.js"></script>
+    <script type="module" src="static/scripts/main.js"></script>
   </body>
 </html>
