@@ -4,9 +4,18 @@ import { getCountries } from "./api.js";
 const countryList = [];
 const countryMap = new Map();
 
+const activeFilters = {
+  name: "",
+  continent: "All",
+  unStatus: "All",
+};
+
 const searchInput = document.getElementById("search-input");
 const filterContainer = document.getElementById("filter-container");
 const countryContainer = document.getElementById("country-container");
+const activeFiltersContainer = document.getElementById(
+  "active-filters-container"
+);
 
 main();
 
@@ -14,6 +23,7 @@ async function main() {
   const countryJson = await getCountries();
 
   countryJson.forEach((country) => {
+    console.log(country.name.common);
     console.log(country.maps.openStreetMaps);
     countryList.push(
       new Country(
@@ -31,8 +41,10 @@ async function main() {
     addCountryToContainer(country);
   });
 
-  searchInput.addEventListener("input", searchForCountry);
+  searchInput.addEventListener("input", filterName);
+
   createFilterButtons();
+  updateActiveFilters();
 }
 
 function addCountryToContainer(country) {
@@ -87,18 +99,6 @@ function addCountryToContainer(country) {
   openStreetMapLink.href = country.maps;
   openStreetMapLink.innerText = "Location";
   countryDiv.appendChild(openStreetMapLink);
-}
-
-function searchForCountry(event) {
-  const searchValue = event.target.value.toLowerCase();
-  countryList.forEach((country) => {
-    const countryName = country.name.toLowerCase();
-    if (countryName.includes(searchValue)) {
-      makeVisible(country.name);
-    } else {
-      makeHidden(country.name);
-    }
-  });
 }
 
 function createFilterButtons() {
@@ -172,28 +172,6 @@ function createContinentFilter() {
   });
 }
 
-function filterContinent(event) {
-  const region = event.target.innerText;
-  if (region === "All") {
-    makeAllVisible();
-    return;
-  }
-
-  countryList.forEach((country) => {
-    let isRegion = false;
-    country.continents.forEach((continent) => {
-      if (continent === region) {
-        makeVisible(country.name);
-        isRegion = true;
-        return;
-      }
-    });
-    if (!isRegion) {
-      makeHidden(country.name);
-    }
-  });
-}
-
 function createUNFilter() {
   const unFilterContainer = document.createElement("div");
   unFilterContainer.className = "dropdown";
@@ -221,22 +199,63 @@ function createUNFilter() {
   });
 }
 
-function filterUNStatus(event) {
-  const status = event.target.innerText;
-  if (status === "All") {
-    makeAllVisible();
-    return;
-  }
-
+function applyFilters() {
   countryList.forEach((country) => {
-    if (status === "UN Member" && !country.unStatus) {
-      makeHidden(country.name);
-    } else if (status === "Non-UN Member" && country.unStatus) {
-      makeHidden(country.name);
-    } else {
+    let isVisible = true;
+
+    if (activeFilters.name !== "") {
+      if (!country.name.toLowerCase().includes(activeFilters.name)) {
+        isVisible = false;
+      }
+    }
+
+    if (
+      activeFilters.continent !== "All" &&
+      !country.continents.includes(activeFilters.continent)
+    ) {
+      isVisible = false;
+    }
+
+    if (activeFilters.unStatus !== "All") {
+      if (
+        (activeFilters.unStatus === "UN Member" && !country.unStatus) ||
+        (activeFilters.unStatus === "Non-UN Member" && country.unStatus)
+      ) {
+        isVisible = false;
+      }
+    }
+
+    if (isVisible) {
       makeVisible(country.name);
+    } else {
+      makeHidden(country.name);
     }
   });
+
+  updateActiveFilters();
+}
+
+function updateActiveFilters() {
+  activeFiltersContainer.innerText =
+    activeFilters.continent + " " + activeFilters.unStatus;
+}
+
+function filterName(event) {
+  const name = event.target.value.toLowerCase();
+  activeFilters.name = name;
+  applyFilters();
+}
+
+function filterContinent(event) {
+  const region = event.target.innerText;
+  activeFilters.continent = region;
+  applyFilters();
+}
+
+function filterUNStatus(event) {
+  const status = event.target.innerText;
+  activeFilters.unStatus = status;
+  applyFilters();
 }
 
 function makeHidden(countyName) {

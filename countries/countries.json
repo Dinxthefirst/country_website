@@ -8496,7 +8496,7 @@
     "flag": "\uD83C\uDDEB\uD83C\uDDEE",
     "maps": {
       "googleMaps": "https://goo.gl/maps/HjgWDCNKRAYHrkMn8",
-      "openStreetMaps": "openstreetmap.org/relation/54224"
+      "openStreetMaps": "https://openstreetmap.org/relation/54224"
     },
     "population": 5530719,
     "gini": { "2018": 27.3 },
@@ -12270,7 +12270,7 @@
     "flag": "\uD83C\uDDF1\uD83C\uDDFE",
     "maps": {
       "googleMaps": "https://goo.gl/maps/eLgGnaQWcJEdYRMy5",
-      "openStreetMaps": "openstreetmap.org/relation/192758"
+      "openStreetMaps": "https://openstreetmap.org/relation/192758"
     },
     "population": 6871287,
     "fifa": "LBY",
@@ -14601,7 +14601,7 @@
     "flag": "\uD83C\uDDFB\uD83C\uDDEE",
     "maps": {
       "googleMaps": "https://goo.gl/maps/mBfreywj8dor6q4m9",
-      "openStreetMaps": "openstreetmap.org/relation/286898"
+      "openStreetMaps": "https://openstreetmap.org/relation/286898"
     },
     "population": 106290,
     "fifa": "VIR",
