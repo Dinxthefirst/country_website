@@ -6,6 +6,7 @@ const countryMap = new Map();
 
 const activeFilters = {
   name: "",
+  sort: "Ascending",
   continent: "All",
   unStatus: "All",
 };
@@ -23,8 +24,6 @@ async function main() {
   const countryJson = await getCountries();
 
   countryJson.forEach((country) => {
-    console.log(country.name.common);
-    console.log(country.maps.openStreetMaps);
     countryList.push(
       new Country(
         country.name.common,
@@ -36,6 +35,8 @@ async function main() {
       )
     );
   });
+
+  countryList.sort((a, b) => a.name.localeCompare(b.name));
 
   countryList.forEach((country) => {
     addCountryToContainer(country);
@@ -102,6 +103,7 @@ function addCountryToContainer(country) {
 }
 
 function createFilterButtons() {
+  createSortFilter();
   createContinentFilter();
   createUNFilter();
 }
@@ -199,6 +201,33 @@ function createUNFilter() {
   });
 }
 
+function createSortFilter() {
+  const sortFilterContainer = document.createElement("div");
+  sortFilterContainer.className = "dropdown";
+  filterContainer.appendChild(sortFilterContainer);
+
+  const sortButton = document.createElement("button");
+  sortButton.className = "dropdown-button";
+  sortButton.innerText = "Sort";
+  sortButton.addEventListener("click", openDropdown);
+  sortFilterContainer.appendChild(sortButton);
+
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.className = "dropdown-container";
+  dropdownContainer.classList.add("hidden");
+  sortFilterContainer.appendChild(dropdownContainer);
+
+  const sortOptions = ["Ascending", "Descending"];
+  sortOptions.forEach((option) => {
+    const optionButton = document.createElement("div");
+    optionButton.className = "dropdown-content";
+    optionButton.classList.add("hidden");
+    optionButton.innerText = option;
+    optionButton.addEventListener("click", sortCountries);
+    dropdownContainer.appendChild(optionButton);
+  });
+}
+
 function applyFilters() {
   countryList.forEach((country) => {
     let isVisible = true;
@@ -237,7 +266,26 @@ function applyFilters() {
 
 function updateActiveFilters() {
   activeFiltersContainer.innerText =
-    activeFilters.continent + " " + activeFilters.unStatus;
+    activeFilters.sort +
+    " " +
+    activeFilters.continent +
+    " " +
+    activeFilters.unStatus;
+}
+
+function sortCountries(event) {
+  const sortType = event.target.innerText;
+  activeFilters.sort = sortType;
+  if (sortType === "Ascending") {
+    countryList.sort((a, b) => a.name.localeCompare(b.name));
+  } else {
+    countryList.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  countryList.forEach((country) => {
+    countryContainer.appendChild(countryMap.get(country.name));
+  });
+  applyFilters();
 }
 
 function filterName(event) {
@@ -264,10 +312,4 @@ function makeHidden(countyName) {
 
 function makeVisible(countryName) {
   countryMap.get(countryName).classList.remove("hidden");
-}
-
-function makeAllVisible() {
-  countryList.forEach((country) => {
-    makeVisible(country.name);
-  });
 }
