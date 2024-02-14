@@ -1,4 +1,6 @@
 import { Country } from "./country.js";
+import { getCountries } from "./api.js";
+
 const countryList = [];
 const countryMap = new Map();
 
@@ -12,6 +14,7 @@ async function main() {
   const countryJson = await getCountries();
 
   countryJson.forEach((country) => {
+    console.log(country.maps.openStreetMaps);
     countryList.push(
       new Country(
         country.name.common,
@@ -24,35 +27,12 @@ async function main() {
     );
   });
 
-  countryList.sort();
-
   countryList.forEach((country) => {
     addCountryToContainer(country);
   });
 
-  createSearchInput();
+  searchInput.addEventListener("input", searchForCountry);
   createFilterButtons();
-}
-
-async function getCountries() {
-  try {
-    return await getCountriesFromServer();
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function getCountriesFromServer() {
-  const response = await fetch("/countries", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Connection failed with status code ${response.status}`);
-  }
-  return await response.json();
 }
 
 function addCountryToContainer(country) {
@@ -104,28 +84,19 @@ function addCountryToContainer(country) {
   // Add location
   const openStreetMapLink = document.createElement("a");
   openStreetMapLink.className = "open-street-map-link";
-  openStreetMapLink.href = country.maps.openStreetMaps;
+  openStreetMapLink.href = country.maps;
   openStreetMapLink.innerText = "Location";
   countryDiv.appendChild(openStreetMapLink);
 }
 
-function createSearchInput() {
-  searchInput.type = "text";
-  searchInput.placeholder = "Search";
-  searchInput.addEventListener("input", searchForCountry);
-}
-
-function searchForCountry() {
-  const searchValue = searchInput.value.toLowerCase();
-  const countries = document.querySelectorAll(".country");
-  countries.forEach((country) => {
-    const countryName = country
-      .querySelector(".country-name")
-      .innerText.toLowerCase();
+function searchForCountry(event) {
+  const searchValue = event.target.value.toLowerCase();
+  countryList.forEach((country) => {
+    const countryName = country.name.toLowerCase();
     if (countryName.includes(searchValue)) {
-      country.classList.remove("hidden");
+      makeVisible(country.name);
     } else {
-      country.classList.add("hidden");
+      makeHidden(country.name);
     }
   });
 }
@@ -135,16 +106,33 @@ function createFilterButtons() {
   createUNFilter();
 }
 
-function toggleDropdown(event) {
+function openDropdown(event) {
+  closeDropdowns();
   const dropdown = event.target.closest(".dropdown");
   const dropdownContainer = dropdown.querySelector(".dropdown-container");
 
-  dropdownContainer.classList.toggle("hidden");
+  dropdownContainer.classList.remove("hidden");
 
   for (let i = 0; i < dropdownContainer.children.length; i++) {
     const child = dropdownContainer.children[i];
-    child.classList.toggle("hidden");
+    child.classList.remove("hidden");
   }
+
+  event.stopPropagation();
+  document.addEventListener("click", closeDropdowns);
+}
+
+function closeDropdowns() {
+  const dropdowns = document.querySelectorAll(".dropdown-container");
+  dropdowns.forEach((dropdown) => {
+    dropdown.classList.add("hidden");
+    for (let i = 0; i < dropdown.children.length; i++) {
+      const child = dropdown.children[i];
+      child.classList.add("hidden");
+    }
+  });
+
+  document.removeEventListener("click", closeDropdowns);
 }
 
 function createContinentFilter() {
@@ -155,7 +143,7 @@ function createContinentFilter() {
   const continentFilterButton = document.createElement("button");
   continentFilterButton.className = "dropdown-button";
   continentFilterButton.innerText = "Continent";
-  continentFilterButton.addEventListener("click", toggleDropdown);
+  continentFilterButton.addEventListener("click", openDropdown);
   continentFilterContainer.appendChild(continentFilterButton);
 
   const dropdownContainer = document.createElement("div");
@@ -214,7 +202,7 @@ function createUNFilter() {
   const unFilterButton = document.createElement("button");
   unFilterButton.className = "dropdown-button";
   unFilterButton.innerText = "UN";
-  unFilterButton.addEventListener("click", toggleDropdown);
+  unFilterButton.addEventListener("click", openDropdown);
   unFilterContainer.appendChild(unFilterButton);
 
   const dropdownContainer = document.createElement("div");
