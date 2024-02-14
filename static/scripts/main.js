@@ -16,8 +16,7 @@ countryContainer.id = "country-container";
 main();
 
 async function main() {
-  const countryJson = await getCountriesJson();
-  // const countryJson = await getCountriesFromAPI();
+  const countryJson = await getCountries();
 
   countryJson.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
@@ -29,19 +28,25 @@ async function main() {
   createFilterButtons();
 }
 
-async function getCountriesJson() {
-  return await fetch("countries/countries.json").then((response) =>
-    response.json()
-  );
+async function getCountries() {
+  try {
+    return await getCountriesFromServer();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-async function getCountriesFromAPI() {
-  return fetch("https://restcountries.com/v3.1/all", {
+async function getCountriesFromServer() {
+  const response = await fetch("/countries", {
     method: "GET",
     headers: {
       Accept: "application/json",
     },
-  }).then((response) => response.json());
+  });
+  if (!response.ok) {
+    throw new Error(`Connection failed with status code ${response.status}`);
+  }
+  return await response.json();
 }
 
 function addCountryToContainer(country) {
@@ -133,7 +138,6 @@ function toggleDropdown(event) {
     child.classList.toggle("hidden");
   }
 }
-
 
 function createContinentFilter() {
   const continentFilterContainer = document.createElement("div");
