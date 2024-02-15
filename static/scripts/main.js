@@ -1,5 +1,5 @@
 import { Country } from "./country.js";
-import { getCountries } from "./api.js";
+import { fetchCountries } from "./api.js";
 
 const countryList = [];
 const countryMap = new Map();
@@ -21,7 +21,7 @@ const activeFiltersContainer = document.getElementById(
 main();
 
 async function main() {
-  const countryJson = await getCountries();
+  const countryJson = await fetchCountries();
 
   countryJson.forEach((country) => {
     countryList.push(

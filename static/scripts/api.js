@@ -1,12 +1,12 @@
-export async function getCountries() {
+export async function fetchCountries() {
   try {
-    return await getCountriesFromServer();
+    return await fetchCountriesFromServer();
   } catch (err) {
     console.log(err);
   }
 }
 
-async function getCountriesFromServer() {
+async function fetchCountriesFromServer() {
   const response = await fetch("/countries", {
     method: "GET",
     headers: {
