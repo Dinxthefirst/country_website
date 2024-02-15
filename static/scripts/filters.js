@@ -7,7 +7,7 @@ const activeFiltersContainer = document.getElementById(
 
 const activeFilters = {
   name: "",
-  continent: "All",
+  continents: [],
   unStatus: "All",
   sort: "Ascending",
 };
@@ -20,8 +20,26 @@ export function filterName(event) {
 
 export function filterContinent(event) {
   const region = event.target.innerText;
-  activeFilters.continent = region;
+  if (activeFilters.continents.includes(region)) {
+    return;
+  }
+  activeFilters.continents.push(region);
+  activeFiltersContainer.appendChild(createContinentFilterContainer(region))
   applyFilters();
+}
+
+function createContinentFilterContainer(region) {
+  const filterContainer = document.createElement("div");
+  filterContainer.className = "active-filter";
+  filterContainer.innerText = region;
+
+  const removeFilterButton = document.createElement("div");
+  removeFilterButton.className = "remove-filter-button";
+  removeFilterButton.innerText = "x";
+  removeFilterButton.addEventListener("click", removeFilter);
+  filterContainer.appendChild(removeFilterButton);
+
+  return filterContainer;
 }
 
 export function filterUNStatus(event) {
@@ -68,11 +86,8 @@ function applyFilters() {
       }
     }
 
-    if (
-      activeFilters.continent !== "All" &&
-      !country.continents.includes(activeFilters.continent)
-    ) {
-      isVisible = false;
+    if (activeFilters.continents.length > 0)  {
+      isVisible = activeFilters.continents.some((continent) => country.continents.includes(continent));
     }
 
     if (activeFilters.unStatus !== "All") {
@@ -90,13 +105,24 @@ function applyFilters() {
       makeHidden(country.name);
     }
   });
-
-  updateActiveFilters();
 }
 
-function updateActiveFilters() {
-  activeFiltersContainer.innerText =
-    activeFilters.continent +
-    " " +
-    activeFilters.unStatus;
+function removeFilter(event) {
+  const parentElement = event.target.parentElement;
+  const filterType = parentElement.textContent.replace(event.target.textContent, "");
+
+  activeFilters.continents = activeFilters.continents.filter(
+    (continent) => continent !== filterType
+  );
+
+  parentElement.remove();
+
+  applyFilters();
 }
+
+// function updateActiveFilters() {
+//   activeFiltersContainer.innerText =
+//     // activeFilters.continents +
+//     // " " +
+//     activeFilters.unStatus;
+// }

@@ -17,45 +17,81 @@ body {
   justify-content: space-around;
   align-items: center;
   margin-bottom: 3rem;
+
+  gap: 1rem;
 }
 
 #filter-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
 
-  width: 50%;
+  flex-grow: 10;
 }
 
 #filter-button-container {
   display: flex;
+  margin-left: auto;
+  order: 2;
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
   gap: 1rem;
+
+  flex-shrink: 0;
 }
 
 #active-filters-container {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 1rem;
 }
 
+.active-filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.5rem;
+  border-radius: 1rem;
+  background-color: rgb(184, 184, 184);
+  user-select: none;
+}
+
+.remove-filter-button {
+  padding: 0 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remove-filter-button:hover {
+  background-color: gray;
+  border-radius: 100%;
+}
+
 #search-container {
   display: flex;
+  float: left;
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
   gap: 1rem;
+
+  width: 35%;
+
+  flex-shrink: 0;
 }
 
 #search-input {
   padding: 0.5rem;
-  width: 300px;
+  width: 80%;
   font-size: 1.5rem;
 }
 

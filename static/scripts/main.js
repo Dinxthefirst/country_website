@@ -144,7 +144,6 @@ function createContinentFilter() {
   continentFilterContainer.appendChild(dropdownContainer);
 
   const continents = [
-    "All",
     "Africa",
     "North America",
     "South America",
