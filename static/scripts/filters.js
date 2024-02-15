@@ -129,10 +129,3 @@ function removeFilter(event) {
 
   applyFilters();
 }
-
-// function updateActiveFilters() {
-//   activeFiltersContainer.innerText =
-//     // activeFilters.continents +
-//     // " " +
-//     activeFilters.unStatus;
-// }
