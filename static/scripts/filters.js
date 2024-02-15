@@ -24,7 +24,7 @@ export function filterContinent(event) {
     return;
   }
   activeFilters.continents.push(region);
-  activeFiltersContainer.appendChild(createContinentFilterContainer(region))
+  activeFiltersContainer.appendChild(createContinentFilterContainer(region));
   applyFilters();
 }
 
@@ -81,13 +81,20 @@ function applyFilters() {
     let isVisible = true;
 
     if (activeFilters.name !== "") {
+      console.log(activeFilters.name);
       if (!country.name.toLowerCase().includes(activeFilters.name)) {
         isVisible = false;
       }
     }
 
-    if (activeFilters.continents.length > 0)  {
-      isVisible = activeFilters.continents.some((continent) => country.continents.includes(continent));
+    if (activeFilters.continents.length > 0) {
+      if (
+        !activeFilters.continents.some((continent) =>
+          country.continents.includes(continent)
+        )
+      ) {
+        isVisible = false;
+      }
     }
 
     if (activeFilters.unStatus !== "All") {
@@ -109,7 +116,10 @@ function applyFilters() {
 
 function removeFilter(event) {
   const parentElement = event.target.parentElement;
-  const filterType = parentElement.textContent.replace(event.target.textContent, "");
+  const filterType = parentElement.textContent.replace(
+    event.target.textContent,
+    ""
+  );
 
   activeFilters.continents = activeFilters.continents.filter(
     (continent) => continent !== filterType
