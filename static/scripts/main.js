@@ -1,22 +1,13 @@
 import { Country } from "./country.js";
 import { fetchCountries } from "./api.js";
+import { filterName, filterContinent, filterUNStatus, sortCountries } from "./filters.js";
 
-const countryList = [];
-const countryMap = new Map();
-
-const activeFilters = {
-  name: "",
-  sort: "Ascending",
-  continent: "All",
-  unStatus: "All",
-};
+export const countryList = [];
+export const countryMap = new Map();
 
 const searchInput = document.getElementById("search-input");
-const filterContainer = document.getElementById("filter-container");
+const filterButtonContainer = document.getElementById("filter-button-container");
 const countryContainer = document.getElementById("country-container");
-const activeFiltersContainer = document.getElementById(
-  "active-filters-container"
-);
 
 main();
 
@@ -45,7 +36,6 @@ async function main() {
   searchInput.addEventListener("input", filterName);
 
   createFilterButtons();
-  updateActiveFilters();
 }
 
 function addCountryToContainer(country) {
@@ -140,7 +130,7 @@ function closeDropdowns() {
 function createContinentFilter() {
   const continentFilterContainer = document.createElement("div");
   continentFilterContainer.className = "dropdown";
-  filterContainer.appendChild(continentFilterContainer);
+  filterButtonContainer.appendChild(continentFilterContainer);
 
   const continentFilterButton = document.createElement("button");
   continentFilterButton.className = "dropdown-button";
@@ -177,7 +167,7 @@ function createContinentFilter() {
 function createUNFilter() {
   const unFilterContainer = document.createElement("div");
   unFilterContainer.className = "dropdown";
-  filterContainer.appendChild(unFilterContainer);
+  filterButtonContainer.appendChild(unFilterContainer);
 
   const unFilterButton = document.createElement("button");
   unFilterButton.className = "dropdown-button";
@@ -202,20 +192,24 @@ function createUNFilter() {
 }
 
 function createSortFilter() {
-  const sortFilterContainer = document.createElement("div");
-  sortFilterContainer.className = "dropdown";
-  filterContainer.appendChild(sortFilterContainer);
+  const searchContainer = document.getElementById("search-container");
+
+  const sortSearch = document.createElement("div");
+  sortSearch.className = "dropdown";
+  searchContainer.appendChild(sortSearch);
 
   const sortButton = document.createElement("button");
+  sortButton.id = "sort-button";
   sortButton.className = "dropdown-button";
-  sortButton.innerText = "Sort";
+  sortButton.innerText = "Ascending";
   sortButton.addEventListener("click", openDropdown);
-  sortFilterContainer.appendChild(sortButton);
+  sortSearch.appendChild(sortButton);
 
   const dropdownContainer = document.createElement("div");
   dropdownContainer.className = "dropdown-container";
   dropdownContainer.classList.add("hidden");
-  sortFilterContainer.appendChild(dropdownContainer);
+  sortSearch.appendChild(dropdownContainer);
+
 
   const sortOptions = ["Ascending", "Descending"];
   sortOptions.forEach((option) => {
@@ -226,90 +220,4 @@ function createSortFilter() {
     optionButton.addEventListener("click", sortCountries);
     dropdownContainer.appendChild(optionButton);
   });
-}
-
-function applyFilters() {
-  countryList.forEach((country) => {
-    let isVisible = true;
-
-    if (activeFilters.name !== "") {
-      if (!country.name.toLowerCase().includes(activeFilters.name)) {
-        isVisible = false;
-      }
-    }
-
-    if (
-      activeFilters.continent !== "All" &&
-      !country.continents.includes(activeFilters.continent)
-    ) {
-      isVisible = false;
-    }
-
-    if (activeFilters.unStatus !== "All") {
-      if (
-        (activeFilters.unStatus === "UN Member" && !country.unStatus) ||
-        (activeFilters.unStatus === "Non-UN Member" && country.unStatus)
-      ) {
-        isVisible = false;
-      }
-    }
-
-    if (isVisible) {
-      makeVisible(country.name);
-    } else {
-      makeHidden(country.name);
-    }
-  });
-
-  updateActiveFilters();
-}
-
-function updateActiveFilters() {
-  activeFiltersContainer.innerText =
-    activeFilters.sort +
-    " " +
-    activeFilters.continent +
-    " " +
-    activeFilters.unStatus;
-}
-
-function sortCountries(event) {
-  const sortType = event.target.innerText;
-  activeFilters.sort = sortType;
-  if (sortType === "Ascending") {
-    countryList.sort((a, b) => a.name.localeCompare(b.name));
-  } else {
-    countryList.sort((a, b) => b.name.localeCompare(a.name));
-  }
-
-  countryList.forEach((country) => {
-    countryContainer.appendChild(countryMap.get(country.name));
-  });
-  applyFilters();
-}
-
-function filterName(event) {
-  const name = event.target.value.toLowerCase();
-  activeFilters.name = name;
-  applyFilters();
-}
-
-function filterContinent(event) {
-  const region = event.target.innerText;
-  activeFilters.continent = region;
-  applyFilters();
-}
-
-function filterUNStatus(event) {
-  const status = event.target.innerText;
-  activeFilters.unStatus = status;
-  applyFilters();
-}
-
-function makeHidden(countyName) {
-  countryMap.get(countyName).classList.add("hidden");
-}
-
-function makeVisible(countryName) {
-  countryMap.get(countryName).classList.remove("hidden");
 }
